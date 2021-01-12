@@ -1,0 +1,31 @@
+version: '2'
+services:
+  db:
+    container_name: db
+    build: 
+      context: ./
+      dockerfile: ./db/mysql/Dockerfile
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: "projects"
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./db/mysql/conf.d:/etc/mysql/conf.d
+      - ./db/logs/mysql:/var/log/mysql
+      - ./db/mysql_data:/var/lib/mysql
+  app:
+    container_name: app
+    tty: true
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - '8080:8080'
+    volumes:
+      - ../Projects:/go/app
+  
